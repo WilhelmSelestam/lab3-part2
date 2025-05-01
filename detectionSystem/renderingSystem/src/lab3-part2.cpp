@@ -16,6 +16,8 @@ int main() try {
     std::string s;
     std::cin >> s;  // e.g. points1.txt
 
+    s = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/points200.txt";
+
     plotData(s);
 } catch (const std::exception& e) {
     fmt::print("Error: {}", e.what());
