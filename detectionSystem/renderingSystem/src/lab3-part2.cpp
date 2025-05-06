@@ -16,7 +16,7 @@ int main() try {
     std::string s;
     std::cin >> s;  // e.g. points1.txt
 
-    s = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/points200.txt";
+    //s = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/points200.txt";
 
     plotData(s);
 } catch (const std::exception& e) {
@@ -32,8 +32,15 @@ void plotData(const std::string& name) {
     std::filesystem::path points_name = name;
     const auto points = readPoints(data_dir / points_name);
 
+    //std::filesystem::path points_name = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/output/largeMystery.txt";
+    //const auto points = readPoints(points_name);
+
     std::filesystem::path segments_name = "segments-" + name;
     const auto lines = readLineSegments(data_dir / "output" / segments_name);
+
+    //std::filesystem::path segments_name = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/output/segments-largeMystery.txt";
+    //const auto lines = readLineSegments(segments_name);
+    
 
     rendering::Window window(850, 850, rendering::Window::UseVSync::Yes);
     while (!window.shouldClose()) {

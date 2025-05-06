@@ -17,14 +17,14 @@
 
 #include <limits>
 
-//#include <../../renderingSystem/src/readfiles.cpp>
+// #include <../../renderingSystem/src/readfiles.cpp>
 #include <find-patterns.hpp>
 
 const std::filesystem::path data_dir{DATA_DIR};
 
 constexpr int minPoints = 4;
 
-struct Point { // feel free to modify
+struct Point {  // feel free to modify
 public:
     Point(int x = 0, int y = 0) : x_{x}, y_{y} {}
 
@@ -60,13 +60,12 @@ int main() {
     std::string points_file;
     std::cin >> points_file;
 
-    //points_file = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/points5.txt";
+    // points_file = "C:/Skola/TND004 - Datastrukturer/lab3-part2/detectionSystem/data/points5.txt";
 
     analyseData(points_file);
 }
 
 /* ***************************************************** */
-
 
 double calculate_slope(const Point& p1, const Point& p2) {
     long long dx = p2.x_ - p1.x_;
@@ -128,16 +127,24 @@ void findCollinearSegments(const std::vector<Point>& points,
 
         std::stable_sort(points_with_slopes.begin(), points_with_slopes.end(),
                          [](const auto& a, const auto& b) {
+                             // Primary sort key: slope
                              if (!are_slopes_equal(a.second, b.second)) {
                                  if (a.second == -std::numeric_limits<double>::infinity())
                                      return true;
                                  if (b.second == -std::numeric_limits<double>::infinity())
                                      return false;
+                                 if (a.second == std::numeric_limits<double>::infinity())
+                                     return false;
+                                 if (b.second == std::numeric_limits<double>::infinity())
+                                     return true;
+
                                  return a.second < b.second;
                              }
                              return false;
                          });
+
         int num_others = points_with_slopes.size();
+
         for (int k = 0; k < num_others; /* manual increment */) {
 
             if (points_with_slopes[k].second == -std::numeric_limits<double>::infinity()) {
@@ -153,37 +160,33 @@ void findCollinearSegments(const std::vector<Point>& points,
             }
 
             int group_size = k - group_start_index;
-            if (group_size >= minPoints - 1) {
+
+            if (group_size >= minPoints - 1) {  // Segment must have at least minPoints
                 std::vector<Point> segment;
                 segment.reserve(group_size + 1);
-                segment.push_back(p);
+                segment.push_back(p);  // Add the pivot point
 
                 for (int m = group_start_index; m < k; ++m) {
                     segment.push_back(points_with_slopes[m].first);
                 }
 
+                // FIX 1: Sort the current segment by Y then X coordinates
                 std::sort(segment.begin(), segment.end());
 
-                if (segment.front() == p) {
-                    bool found_earlier_collinear = false;
-                    for (int prev_idx = 0; prev_idx < i; ++prev_idx) {
-                        if (are_slopes_equal(calculate_slope(sorted_points[prev_idx], p),
-                                             current_slope)) {
-                            found_earlier_collinear = true;
-                            break;
-                        }
-                    }
-                    if (!found_earlier_collinear) {
-                        result_segments.push_back(segment);
-                    }
+                // FIX 2: Check if the pivot 'p' is the smallest point in this segment.
+                // This ensures each maximal segment is reported only once, from its
+                // true minimal point, and handles subsegment redundancy.
+                // The segment.empty() check is a safeguard, though 'p' is always added.
+                if (!segment.empty() && segment.front() == p) {
+                    // FIX 3: Add the valid, non-redundant segment to the results
+                    result_segments.push_back(segment);
                 }
             }
         }
     }
 }
 
-void analyseData(const std::filesystem::path& pointsFile,
-                 const std::filesystem::path& segmentsFile,
+void analyseData(const std::filesystem::path& pointsFile, const std::filesystem::path& segmentsFile,
                  const std::filesystem::path& outputFileName) {
     /*
      * Add code here
@@ -202,13 +205,11 @@ void analyseData(const std::filesystem::path& pointsFile,
         Point p;
         is >> p.x_ >> p.y_;
         points.push_back(p);
-        //std::cout << p.x_ + "\n";
+        // std::cout << p.x_ + "\n";
     }
-    
 
     std::vector<std::vector<Point>> result_segments;
     findCollinearSegments(points, result_segments);
-    
 
     std::ofstream WriteFile(outputFileName);
     std::ofstream WriteFile2(segmentsFile);
@@ -217,8 +218,7 @@ void analyseData(const std::filesystem::path& pointsFile,
         // std::cout << "hej\n";
         WriteFile << result_segments[i][0].x_ << " " << result_segments[i][0].y_ << " "
                   << result_segments[i][result_segments[i].size() - 1].x_ << " "
-                  << result_segments[i][result_segments[i].size() - 1].y_
-                  << "\n";
+                  << result_segments[i][result_segments[i].size() - 1].y_ << "\n";
 
         for (int j = 0; j < result_segments[i].size(); j++) {
             WriteFile2 << result_segments[i][j].toString();
@@ -229,18 +229,14 @@ void analyseData(const std::filesystem::path& pointsFile,
         WriteFile2 << "\n";
     }
 
-    
     WriteFile.close();
     WriteFile2.close();
-
 }
 
 void analyseData(const std::string& name) {
     std::filesystem::path points_name = name;
     std::filesystem::path segments_name = "segments-" + name;
 
-    analyseData(data_dir / points_name, data_dir / "output" / segments_name, data_dir / "output" / points_name);
+    analyseData(data_dir / points_name, data_dir / "output" / segments_name,
+                data_dir / "output" / points_name);
 }
-
-
-
