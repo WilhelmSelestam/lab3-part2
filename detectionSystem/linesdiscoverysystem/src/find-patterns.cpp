@@ -208,17 +208,17 @@ void analyseData(const std::filesystem::path& pointsFile, const std::filesystem:
 
     for (int i = 0; i < result_segments.size(); i++) {
         // std::cout << "hej\n";
-        WriteFile << result_segments[i][0].x_ << " " << result_segments[i][0].y_ << " "
+        WriteFile2 << result_segments[i][0].x_ << " " << result_segments[i][0].y_ << " "
                   << result_segments[i][result_segments[i].size() - 1].x_ << " "
                   << result_segments[i][result_segments[i].size() - 1].y_ << "\n";
 
         for (int j = 0; j < result_segments[i].size(); j++) {
-            WriteFile2 << result_segments[i][j].toString();
+            WriteFile << result_segments[i][j].toString();
             if (j != result_segments[i].size() - 1) {
-                WriteFile2 << "->";
+                WriteFile << "->";
             }
         }
-        WriteFile2 << "\n";
+        WriteFile << "\n";
     }
 
     WriteFile.close();
