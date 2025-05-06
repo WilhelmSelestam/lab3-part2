@@ -161,24 +161,16 @@ void findCollinearSegments(const std::vector<Point>& points,
 
             int group_size = k - group_start_index;
 
-            if (group_size >= minPoints - 1) {  // Segment must have at least minPoints
+            if (group_size >= minPoints - 1) {
                 std::vector<Point> segment;
                 segment.reserve(group_size + 1);
-                segment.push_back(p);  // Add the pivot point
+                segment.push_back(p);
 
                 for (int m = group_start_index; m < k; ++m) {
                     segment.push_back(points_with_slopes[m].first);
                 }
-
-                // FIX 1: Sort the current segment by Y then X coordinates
                 std::sort(segment.begin(), segment.end());
-
-                // FIX 2: Check if the pivot 'p' is the smallest point in this segment.
-                // This ensures each maximal segment is reported only once, from its
-                // true minimal point, and handles subsegment redundancy.
-                // The segment.empty() check is a safeguard, though 'p' is always added.
                 if (!segment.empty() && segment.front() == p) {
-                    // FIX 3: Add the valid, non-redundant segment to the results
                     result_segments.push_back(segment);
                 }
             }
