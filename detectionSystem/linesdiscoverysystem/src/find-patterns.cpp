@@ -19,6 +19,7 @@
 
 // #include <../../renderingSystem/src/readfiles.cpp>
 #include <find-patterns.hpp>
+#include <unordered_map>
 
 const std::filesystem::path data_dir{DATA_DIR};
 
@@ -100,6 +101,12 @@ bool are_slopes_equal(double s1, double s2) {
     return std::abs(s1 - s2) < epsilon;
 }
 
+//bool are_collinear(const Point& p1, const Point& p2, const Point& p3) {
+//    long long left_side = (p2.y_ - p1.y_) * (p3.x_ - p1.x_);
+//    long long right_side = (p3.y_ - p1.y_) * (p2.x_ - p1.x_);
+//    return left_side == right_side;
+//}
+
 void findCollinearSegments(const std::vector<Point>& points,
                            std::vector<std::vector<Point>>& result_segments) {
     int n = points.size();
@@ -114,6 +121,8 @@ void findCollinearSegments(const std::vector<Point>& points,
 
     for (int i = 0; i < n; ++i) {
         Point p = sorted_points[i];
+
+        //std::unordered_map<int, std::vector<Point>> collinear_groups;
 
         std::vector<std::pair<Point, double>> points_with_slopes;
         points_with_slopes.reserve(n);
